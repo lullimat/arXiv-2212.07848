@@ -166,8 +166,11 @@ class StructureFactorsData(ManageData):
                 _chks += [self.values_dict[_content] in ManageData.PullData(self, self.ContentKey(_content))]
             else:
                 _chks += [False]
-        
-        return AllTrue(_chks)
+
+        if AllTrue(_chks):
+            return self.PullData(self.DataKeyPrefix())['Sk']['N']
+        else:
+            return False
     
     def AddContent(self):
         for _content in self.content_list:
