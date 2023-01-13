@@ -7,7 +7,7 @@
 ```bash
 $ git pull
 ```
-**At the moment it is possible to reproduce Figure 1 of the paper**
+**At the moment it is possible to reproduce Figure 1, Figure 2a and Figure 2b of the paper**
 **Soon all the figures should be reproducible**
 
 This project will be updated in order be kept functional for further updates to [**idea.deploy**](https://github.com/lullimat/idea.deploy).
