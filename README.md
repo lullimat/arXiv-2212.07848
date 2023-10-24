@@ -7,7 +7,7 @@
 ```bash
 $ git pull
 ```
-**At the moment it is possible to reproduce Figure 1, Figure 2a and Figure 2b of the paper**
+**At the moment it is possible to reproduce Figure 1 and 2 of the paper**
 **Soon all the figures should be reproducible**
 
 This project will be updated in order be kept functional for further updates to [**idea.deploy**](https://github.com/lullimat/idea.deploy).
@@ -29,3 +29,5 @@ As of today, after much testing Firefox and Google Chrome have offered the most 
 ## Dependencies
 
 A part from the python dependencies a working "latex" environment needs to be installed on the system in order to reproduce the plots which contain latex symbols.
+
+Tuesday October 24, 2023
