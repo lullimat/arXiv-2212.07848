@@ -114,6 +114,126 @@ def StructureFactors3D(lbm):
 
     lbm.sims_vars['n2_ft'] += [_n2_ft]
 
+def StructureFactors2D(lbm):
+    if len(lbm.sims_vars['dim_sizes']) != 2:
+        print("Warning! This function is for 2D, you are using it in",
+              len(lbm.sims_vars['dim_sizes']), "dimensions!")
+    
+    first_flag = False
+    if 'LUT_cos' not in lbm.sims_vars:
+        _dim_sizes = lbm.sims_vars['dim_sizes']
+        
+        _nx_list = np.arange(0, _dim_sizes[0] // 2)
+        lbm.sims_vars['nx_list'] = _nx_list
+        '''
+        Preparing lookup tables for FT
+        '''
+        _LUT_cos, _LUT_sin = [], []
+        for _nx in _nx_list:
+            _LUT_cos += [np.cos(np.arange(_dim_sizes[0]) * 2. * np.pi * _nx / _dim_sizes[0])]
+            _LUT_sin += [np.sin(np.arange(_dim_sizes[0]) * 2. * np.pi * _nx / _dim_sizes[0])]
+        lbm.sims_vars['LUT_cos'] = np.array(_LUT_cos)
+        lbm.sims_vars['LUT_sin'] = np.array(_LUT_sin)
+        '''
+        Creating lists for observables
+        '''            
+        lbm.sims_vars['n2_ft'] = []        
+        
+        first_flag = True
+
+    _dim_sizes, _V = lbm.sims_vars['dim_sizes'], lbm.sims_vars['V']
+    _dim = len(_dim_sizes)
+    _n_swap = lbm.sims_idpy_memory['n'].D2H()
+    _n_swap = _n_swap.reshape(np.flip(_dim_sizes))
+
+    '''
+    Begin FT
+    '''
+    _LUT_cos = lbm.sims_vars['LUT_cos']
+    _LUT_sin = lbm.sims_vars['LUT_sin']
+    _nx_list = lbm.sims_vars['nx_list']
+    
+    _n2_ft = []
+    
+    for _i_nx, _nx in enumerate(_nx_list):
+        _n2_ft_swap = 0
+
+        _Sum_cos_n_x, _Sum_sin_n_x = 0, 0
+        _Sum_cos_n_y, _Sum_sin_n_y = 0, 0
+
+        # X-direction
+        for _x in range(_dim_sizes[0]):
+            _Sum_cos_n_x += np.sum(_n_swap[:,_x]) * _LUT_cos[_i_nx][_x]
+            _Sum_sin_n_x += np.sum(_n_swap[:,_x]) * _LUT_sin[_i_nx][_x]
+
+        # Y-direction
+        for _y in range(_dim_sizes[1]):
+            _Sum_cos_n_y += np.sum(_n_swap[_y,:]) * _LUT_cos[_i_nx][_y]
+            _Sum_sin_n_y += np.sum(_n_swap[_y,:]) * _LUT_sin[_i_nx][_y]            
+        
+        _n2_ft_swap += (_Sum_cos_n_x ** 2 + _Sum_sin_n_x ** 2) / _V       
+        _n2_ft_swap += (_Sum_cos_n_y ** 2 + _Sum_sin_n_y ** 2) / _V
+        _n2_ft_swap /= 2
+
+        _n2_ft += [_n2_ft_swap]
+
+    lbm.sims_vars['n2_ft'] += [_n2_ft]
+
+def StructureFactors1D(lbm):
+    if len(lbm.sims_vars['dim_sizes']) != 1:
+        print("Warning! This function is for 1D, you are using it in",
+              len(lbm.sims_vars['dim_sizes']), "dimensions!")
+    
+    first_flag = False
+    if 'LUT_cos' not in lbm.sims_vars:
+        _dim_sizes = lbm.sims_vars['dim_sizes']
+        
+        _nx_list = np.arange(0, _dim_sizes[0] // 2)
+        lbm.sims_vars['nx_list'] = _nx_list
+        '''
+        Preparing lookup tables for FT
+        '''
+        _LUT_cos, _LUT_sin = [], []
+        for _nx in _nx_list:
+            _LUT_cos += [np.cos(np.arange(_dim_sizes[0]) * 2. * np.pi * _nx / _dim_sizes[0])]
+            _LUT_sin += [np.sin(np.arange(_dim_sizes[0]) * 2. * np.pi * _nx / _dim_sizes[0])]
+        lbm.sims_vars['LUT_cos'] = np.array(_LUT_cos)
+        lbm.sims_vars['LUT_sin'] = np.array(_LUT_sin)
+        '''
+        Creating lists for observables
+        '''            
+        lbm.sims_vars['n2_ft'] = []
+        
+        first_flag = True
+
+    _dim_sizes, _V = lbm.sims_vars['dim_sizes'], lbm.sims_vars['V']
+    _dim = len(_dim_sizes)
+    _n_swap = lbm.sims_idpy_memory['n'].D2H()
+    _n_swap = _n_swap.reshape(np.flip(_dim_sizes))
+
+    '''
+    Begin FT
+    '''
+    _LUT_cos = lbm.sims_vars['LUT_cos']
+    _LUT_sin = lbm.sims_vars['LUT_sin']
+    _nx_list = lbm.sims_vars['nx_list']
+    
+    _n2_ft = []
+    
+    for _i_nx, _nx in enumerate(_nx_list):
+        _n2_ft_swap = 0
+
+        _Sum_cos_n_x, _Sum_sin_n_x = 0, 0
+        
+        # X-direction
+        for _x in range(_dim_sizes[0]):
+            _Sum_cos_n_x += _n_swap[_x] * _LUT_cos[_i_nx][_x]
+            _Sum_sin_n_x += _n_swap[_x] * _LUT_sin[_i_nx][_x]
+        
+        _n2_ft_swap += (_Sum_cos_n_x ** 2 + _Sum_sin_n_x ** 2) / _V       
+        _n2_ft += [_n2_ft_swap]
+
+    lbm.sims_vars['n2_ft'] += [_n2_ft]
 
 
 class StructureFactorsData(ManageData):
