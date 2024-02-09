@@ -288,7 +288,10 @@ class StructureFactorsData(ManageData):
                 _chks += [False]
 
         if AllTrue(_chks):
-            return self.PullData(self.DataKeyPrefix())['Sk']['N']
+            if 'N' in self.PullData(self.DataKeyPrefix())['Sk']:
+                return self.PullData(self.DataKeyPrefix())['Sk']['N']
+            else:
+                return True
         else:
             return False
     
